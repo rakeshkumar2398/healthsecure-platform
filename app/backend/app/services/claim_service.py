@@ -23,3 +23,7 @@ def create_claim(db: Session, claim_data: ClaimCreate):
 
 def get_claims(db: Session):
     return db.query(Claim).all()
+
+
+def get_claim_by_id(db: Session, claim_id: str):
+    return db.query(Claim).filter(Claim.id == claim_id).first()
