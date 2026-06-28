@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.claim import Claim
-from app.schemas.claim_schema import ClaimCreate
+from app.schemas.claim_schema import ClaimCreate, ClaimUpdate
 
 
 def create_claim(db: Session, claim_data: ClaimCreate):
@@ -27,3 +27,32 @@ def get_claims(db: Session):
 
 def get_claim_by_id(db: Session, claim_id: str):
     return db.query(Claim).filter(Claim.id == claim_id).first()
+
+
+def update_claim(db: Session, claim_id: str, claim_data: ClaimUpdate):
+    claim = get_claim_by_id(db, claim_id)
+
+    if not claim:
+        return None
+
+    update_data = claim_data.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(claim, field, value)
+
+    db.commit()
+    db.refresh(claim)
+
+    return claim
+
+
+def delete_claim(db: Session, claim_id: str):
+    claim = get_claim_by_id(db, claim_id)
+
+    if not claim:
+        return None
+
+    db.delete(claim)
+    db.commit()
+
+    return claim
