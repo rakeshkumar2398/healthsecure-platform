@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from app.core.config import settings
+from app.api.claims import router as claims_router
+from app.db.database import Base, engine
+from app.models.claim import Claim
 import psycopg2
 import redis
 
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(title="HealthSecure Claims API")
+
+app.include_router(claims_router)
+
 
 @app.get("/health")
 def health_check():
