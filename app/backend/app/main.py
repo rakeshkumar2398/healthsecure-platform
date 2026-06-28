@@ -7,8 +7,19 @@ from app.models.claim import Claim
 import psycopg2
 import redis
 
-Base.metadata.create_all(bind=engine)
 
+from contextlib import asynccontextmanager
+from app.db.database import Base, engine
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+app = FastAPI(
+    title="HealthSecure Claims API",
+    lifespan=lifespan
+)
 app = FastAPI(title="HealthSecure Claims API")
 
 app.add_exception_handler(Exception, global_exception_handler)
