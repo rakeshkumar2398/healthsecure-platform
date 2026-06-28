@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.core.config import settings
 from app.api.claims import router as claims_router
 from app.db.database import Base, engine
+from app.core.exception_handler import global_exception_handler
 from app.models.claim import Claim
 import psycopg2
 import redis
@@ -9,6 +10,8 @@ import redis
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="HealthSecure Claims API")
+
+app.add_exception_handler(Exception, global_exception_handler)
 
 app.include_router(claims_router)
 
